@@ -1,0 +1,183 @@
+import Stripe from "stripe";
+import axios from "axios";
+import crypto from "crypto";
+import Donation from "../models/Donation.js";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+// ---------- Stripe ----------
+
+export async function createStripePaymentIntent(req, res, next) {
+  try {
+    const { amount, currency = "usd", donorEmail, donorName, dedicatedTo } = req.body;
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount, // smallest currency unit, e.g. cents
+      currency,
+      receipt_email: donorEmail,
+      metadata: { donorName: donorName || "", dedicatedTo: dedicatedTo || "" },
+    });
+
+    await Donation.create({
+      donorName,
+      donorEmail,
+      amount,
+      currency: currency.toUpperCase(),
+      provider: "stripe",
+      providerReference: paymentIntent.id,
+      status: "pending",
+      dedicatedTo,
+    });
+
+    res.json({ clientSecret: paymentIntent.client_secret });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// Stripe requires the raw request body for signature verification.
+// Mount this route with express.raw({ type: "application/json" }).
+export async function stripeWebhook(req, res) {
+  const sig = req.headers["stripe-signature"];
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    return res.status(400).send(`Webhook signature verification failed: ${err.message}`);
+  }
+
+  if (event.type === "payment_intent.succeeded" || event.type === "payment_intent.payment_failed") {
+    const intent = event.data.object;
+    const status = event.type === "payment_intent.succeeded" ? "successful" : "failed";
+    await Donation.findOneAndUpdate(
+      { providerReference: intent.id },
+      { status }
+    );
+  }
+
+  res.json({ received: true });
+}
+
+// ---------- Paystack ----------
+
+export async function initializePaystackTransaction(req, res, next) {
+  try {
+    const { amount, currency = "NGN", donorEmail, donorName, dedicatedTo } = req.body;
+
+    const response = await axios.post(
+      "https://api.paystack.co/transaction/initialize",
+      {
+        email: donorEmail,
+        amount, // Paystack expects the smallest currency unit (e.g. kobo)
+        currency,
+        metadata: { donorName: donorName || "", dedicatedTo: dedicatedTo || "" },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+        },
+      }
+    );
+
+    const { reference, authorization_url } = response.data.data;
+
+    await Donation.create({
+      donorName,
+      donorEmail,
+      amount,
+      currency,
+      provider: "paystack",
+      providerReference: reference,
+      status: "pending",
+      dedicatedTo,
+    });
+
+    res.json({ authorizationUrl: authorization_url, reference });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// Paystack signs webhook payloads with HMAC SHA512 of the raw body,
+// using your secret key. Mount this route with express.json() but verify
+// against the raw body captured by the json middleware's verify option.
+export async function paystackWebhook(req, res) {
+  const hash = crypto
+    .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY)
+    .update(req.rawBody)
+    .digest("hex");
+
+  if (hash !== req.headers["x-paystack-signature"]) {
+    return res.status(401).send("Invalid signature");
+  }
+
+  const event = req.body;
+
+  if (event.event === "charge.success") {
+    await Donation.findOneAndUpdate(
+      { providerReference: event.data.reference },
+      { status: "successful" }
+    );
+  } else if (event.event === "charge.failed") {
+    await Donation.findOneAndUpdate(
+      { providerReference: event.data.reference },
+      { status: "failed" }
+    );
+  }
+
+  res.sendStatus(200);
+}
+
+// ---------- Admin ----------
+
+export async function listDonations(req, res, next) {
+  try {
+    const { status, provider } = req.query;
+    const filter = {};
+    if (status) filter.status = status;
+    if (provider) filter.provider = provider;
+
+    const donations = await Donation.find(filter).sort({ createdAt: -1 });
+    res.json(donations);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function donationAnalytics(req, res, next) {
+  try {
+    const [totals] = await Donation.aggregate([
+      { $match: { status: "successful" } },
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: "$amount" },
+          totalDonations: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const byProvider = await Donation.aggregate([
+      { $match: { status: "successful" } },
+      {
+        $group: {
+          _id: "$provider",
+          amount: { $sum: "$amount" },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    res.json({
+      totals: totals || { totalAmount: 0, totalDonations: 0 },
+      byProvider,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
