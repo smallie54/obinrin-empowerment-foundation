@@ -1,25 +1,28 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home/Home";
-import About from "./pages/About/About";
-import StoriesPage from "./pages/Stories/Stories";
-import Gallery from "./pages/Gallery/Gallery";
-import Programs from "./pages/Programs/Programs";
-import Blog from "./pages/Blog/Blog";
-import Impact from "./pages/Impact/Impact";
-import Donate from "./pages/Donate/Donate";
+
+import Home from "./pages/Home/home";
+import About from "./pages/about/about";
+import StoriesPage from "./pages/stories/stories";
+import Gallery from "./pages/gallery/gallery";
+import Programs from "./pages/programs/programs";
+import Blog from "./pages/blog/blog";
+import Impact from "./pages/impact/impact";
+import Donate from "./pages/donate/donate";
+
 import AdminLayout from "./layouts/AdminLayout";
 import ProtectedRoute from "./admin/auth/ProtectedRoute";
-import Dashboard from "./pages/Admin/Dashboard";
-import Login from "./pages/Admin/Login";
-import Settings from "./pages/Admin/Setttings";
-import Reports from "./pages/Admin/Reports";
-import AdminGallery from "./pages/Admin/Gallery";
-import AdminBlog from "./pages/Admin/Blog";
-import Donor from "./pages/Admin/Donor";
 import PublicLayout from "./layouts/PublicLayout";
-import Schools from "./pages/Admin/Schools";
-import Donations from "./pages/Admin/Donations";
-import Stories from "./pages/Admin/Stories";
+
+import Dashboard from "./pages/admin/Dashboard";
+import Login from "./pages/admin/Login";
+import Settings from "./pages/admin/Setttings";
+import Reports from "./pages/admin/Reports";
+import AdminGallery from "./pages/admin/Gallery";
+import AdminBlog from "./pages/admin/Blog";
+import Donor from "./pages/admin/Donor";
+import Schools from "./pages/admin/Schools";
+import Donations from "./pages/admin/Donations";
+import Stories from "./pages/admin/Stories";
 
 export default function App() {
   return (
