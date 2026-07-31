@@ -20,7 +20,8 @@ import Schools from "./pages/Admin/Schools";
 import Donations from "./pages/Admin/Donations";
 import Stories from "./pages/Admin/Stories";
 import PublicLayout from "./layouts/PublicLayout";
-
+import ProtectedRoute from "./admin/auth/ProtectedRoute"
+import AdminLayout from "./layouts/AdminLayout"
 export default function App() {
   return (
     <Routes>
