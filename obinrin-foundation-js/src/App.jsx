@@ -19,6 +19,7 @@ import Donor from "./pages/Admin/Donor";
 import Schools from "./pages/Admin/Schools";
 import Donations from "./pages/Admin/Donations";
 import Stories from "./pages/Admin/Stories";
+import PublicLayout from "./layouts/PublicLayout";
 
 export default function App() {
   return (
