@@ -7,13 +7,15 @@ import {
   setupTwoFactor,
   enableTwoFactor,
   me,
+  updateProfile,
+  changePassword,
+  listAdmins,
 } from "../controllers/adminAuthController.js";
 import { requireAdmin, requireSuperAdmin } from "../middleware/auth.js";
 import { validate } from "../middleware/validate.js";
 
 const router = Router();
 
-// Only an existing superadmin can create new admin accounts
 router.post(
   "/create",
   requireAdmin,
@@ -51,5 +53,15 @@ router.post(
 );
 
 router.get("/me", requireAdmin, me);
+router.patch("/me", requireAdmin, updateProfile);
+router.post(
+  "/change-password",
+  requireAdmin,
+  [body("currentPassword").notEmpty(), body("newPassword").isLength({ min: 8 })],
+  validate,
+  changePassword
+);
+
+router.get("/admins", requireAdmin, requireSuperAdmin, listAdmins);
 
 export default router;

@@ -1,4 +1,8 @@
 import "dotenv/config";
+import dns from "dns";
+
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
 import mongoose from "mongoose";
 import Admin from "../models/Admin.js";
 

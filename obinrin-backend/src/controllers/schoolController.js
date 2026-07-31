@@ -95,6 +95,8 @@ export async function empowermentAnalytics(req, res, next) {
         $group: {
           _id: null,
           totalGirlsSupported: { $sum: "$girlsSupported" },
+          totalPadsDistributed: { $sum: "$padsDistributed" },
+          totalMaterialsDelivered: { $sum: "$materialsDelivered" },
           totalSchools: { $sum: 1 },
         },
       },
@@ -116,10 +118,42 @@ export async function empowermentAnalytics(req, res, next) {
     ]);
 
     res.json({
-      totals: totals || { totalGirlsSupported: 0, totalSchools: 0 },
+      totals: totals || {
+        totalGirlsSupported: 0,
+        totalPadsDistributed: 0,
+        totalMaterialsDelivered: 0,
+        totalSchools: 0,
+      },
       byCountry,
       byStatus,
     });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function publicImpactStats(req, res, next) {
+  try {
+    const [totals] = await School.aggregate([
+      {
+        $group: {
+          _id: null,
+          girlsSupported: { $sum: "$girlsSupported" },
+          padsDistributed: { $sum: "$padsDistributed" },
+          materialsDelivered: { $sum: "$materialsDelivered" },
+          schoolsReached: { $sum: 1 },
+        },
+      },
+    ]);
+
+    res.json(
+      totals || {
+        girlsSupported: 0,
+        padsDistributed: 0,
+        materialsDelivered: 0,
+        schoolsReached: 0,
+      }
+    );
   } catch (err) {
     next(err);
   }

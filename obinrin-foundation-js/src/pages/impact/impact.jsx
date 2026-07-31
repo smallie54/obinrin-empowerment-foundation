@@ -67,7 +67,11 @@ export default function Impact() {
                         <br />
                         Measurable <span className="text-yellow-400">Impact.</span>
                     </h1>
-                    <span className="block w-24 h-1 bg-yellow-400 rounded-full my-6" />
+                      <div className="flex items-center gap-2 my-6">
+                        <span className="w-1/3 h-1 bg-gold rounded-full" />
+                        <span className="w-2 h-2 bg-gold rounded-full" />
+                        <span className="w-1/3 h-1 bg-gold rounded-full" />
+                    </div>
                     <p className="text-white/80 max-w-lg">
                         Every girl empowered creates a ripple effect that transforms
                         families, uplifts communities, and builds a brighter future for
@@ -177,7 +181,6 @@ export default function Impact() {
                     </div>
                 </div>
             </section>
-            <Footer />
         </div>
     );
 }

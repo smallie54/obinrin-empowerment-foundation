@@ -1,17 +1,14 @@
-import { v2 as cloudinary } from "cloudinary";
+import cloudinary from "cloudinary";
 import multer from "multer";
 import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
 const cloudinaryStorageModule = require("multer-storage-cloudinary");
 
-// Different versions of this package export the class differently:
-// newer versions expose { CloudinaryStorage }, older versions export
-// the class itself as module.exports. Handle both.
 const CloudinaryStorage =
   cloudinaryStorageModule.CloudinaryStorage || cloudinaryStorageModule;
 
-cloudinary.config({
+cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
@@ -31,4 +28,4 @@ export const upload = multer({
   limits: { fileSize: 8 * 1024 * 1024 }, // 8MB
 });
 
-export default cloudinary;
+export default cloudinary.v2;

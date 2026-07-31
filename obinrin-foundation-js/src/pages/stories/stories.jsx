@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Search, Heart, ArrowRight, Star } from "lucide-react";
 import { webImg } from "../../assets/assets";
 import Nav from "../../components/Nav";
+import publicApi from "../../lib/public";
 
 function getImg(name) {
   return webImg.find((item) => item.name === name)?.Image;
@@ -26,69 +27,96 @@ const filters = [
   "Community",
 ];
 
-const featuredStories = [
+// Shown until real stories are published via the admin panel, so this
+// page never looks empty on a fresh site.
+const fallbackFeatured = [
   {
+    _id: "fallback-1",
     category: "Education",
     featured: true,
-    image: getImg("girlsImg1"),
+    coverImage: { url: getImg("girlsImg1") },
     title: "From Struggle to Success: Kemi's Journey",
     excerpt:
       "Kemi went from nearly dropping out of school to becoming the best student in her class — thanks to the support she received from Obinrin.",
-    name: "Kemi, 16",
+    girlName: "Kemi",
+    girlAge: 16,
     location: "Oyo State, Nigeria",
-    avatar: getImg("successStoryImg1"),
+    avatarImage: { url: getImg("successStoryImg1") },
   },
   {
+    _id: "fallback-2",
     category: "Mentorship",
-    image: getImg("mentorshipImg1"),
+    coverImage: { url: getImg("mentorshipImg1") },
     title: "Finding My Voice: Aisha's Story",
     excerpt:
       "Through mentorship and life skills training, Aisha discovered her confidence and is now leading a girls' club in her community.",
-    name: "Aisha, 17",
+    girlName: "Aisha",
+    girlAge: 17,
     location: "Kwara State, Nigeria",
-    avatar: getImg("successStoryImg2"),
+    avatarImage: { url: getImg("successStoryImg2") },
   },
   {
+    _id: "fallback-3",
     category: "Leadership",
-    image: getImg("girlsImg2"),
+    coverImage: { url: getImg("girlsImg2") },
     title: "Leading Change: Mercy's Impact",
     excerpt:
       "Mercy used the skills she gained from our leadership program to start a sanitation campaign in her school.",
-    name: "Mercy, 18",
+    girlName: "Mercy",
+    girlAge: 18,
     location: "Lagos State, Nigeria",
-    avatar: getImg("successStoryImg3"),
+    avatarImage: { url: getImg("successStoryImg3") },
   },
 ];
 
-const moreStories = [
+const fallbackMore = [
   {
+    _id: "fallback-4",
     category: "Education",
-    image: getImg("outreachImg1"),
+    coverImage: { url: getImg("outreachImg1") },
     title: "A Brighter Tomorrow for 50 Girls",
     excerpt: "How a new learning center is changing lives in a rural community.",
   },
   {
+    _id: "fallback-5",
     category: "Skill Development",
-    image: getImg("girlsImg3"),
+    coverImage: { url: getImg("girlsImg3") },
     title: "From Dreams to Skills",
     excerpt: "Fatima's journey through our vocational training program.",
   },
   {
+    _id: "fallback-6",
     category: "Health & Wellness",
-    image: getImg("outreachImg2"),
+    coverImage: { url: getImg("outreachImg2") },
     title: "Stronger, Healthier, Happier",
     excerpt: "How our wellness program is building healthier and more confident girls.",
   },
   {
+    _id: "fallback-7",
     category: "Community",
-    image: getImg("outreachImg3"),
+    coverImage: { url: getImg("outreachImg3") },
     title: "Changing Mindsets, Together",
     excerpt: "A community coming together to support girls' education.",
   },
 ];
 
 export default function Stories() {
+  const [stories, setStories] = useState(null); // null = still loading
   const [activeFilter, setActiveFilter] = useState("All Stories");
+
+  useEffect(() => {
+    publicApi
+      .get("/stories", { params: { status: "published" } })
+      .then((res) => setStories(res.data.length > 0 ? res.data : null))
+      .catch(() => setStories(null));
+  }, []);
+
+  const featuredStories = stories
+    ? stories.filter((s) => s.featured)
+    : fallbackFeatured;
+  const moreStories = stories
+    ? stories.filter((s) => !s.featured)
+    : fallbackMore;
 
   const matchesFilter = (category) =>
     activeFilter === "All Stories" || category === activeFilter;
@@ -99,9 +127,9 @@ export default function Stories() {
 
   return (
     <div>
-      <Nav/>
-      {/* ---- Hero ---- */}
-      <section className="relative pt-20 md:pt-0" >
+      <Nav />
+
+      <section className="relative pt-20 md:pt-0">
         <div className="h-64 md:h-72 relative overflow-hidden">
           <img
             src={getImg("girlsImg2")}
@@ -128,7 +156,6 @@ export default function Stories() {
         </div>
       </section>
 
-      {/* ---- Filters ---- */}
       <section className="px-6 md:px-12 lg:px-24 py-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-wrap gap-3">
           {filters.map((filter) => (
@@ -156,16 +183,19 @@ export default function Stories() {
         </p>
       )}
 
-      {/* ---- Featured story cards ---- */}
       {visibleFeatured.length > 0 && (
         <section className="px-6 md:px-12 lg:px-24 grid md:grid-cols-3 gap-6">
           {visibleFeatured.map((story) => (
             <article
-              key={story.title}
+              key={story._id}
               className="bg-white rounded-2xl overflow-hidden border border-charcoal/10 shadow-sm"
             >
               <div className="relative h-48">
-                <img src={story.image} alt={story.title} className="w-full h-full object-cover" />
+                <img
+                  src={story.coverImage?.url || getImg("outreachImg1")}
+                  alt={story.title}
+                  className="w-full h-full object-cover"
+                />
                 <span
                   className={`absolute top-3 left-3 text-white text-xs font-semibold px-3 py-1 rounded-full ${categoryStyles[story.category]}`}
                 >
@@ -182,13 +212,18 @@ export default function Stories() {
                 <p className="text-sm text-charcoal/70 mt-2">{story.excerpt}</p>
                 <div className="flex items-center justify-between mt-5">
                   <div className="flex items-center gap-2">
-                    <img
-                      src={story.avatar}
-                      alt={story.name}
-                      className="w-9 h-9 rounded-full object-cover"
-                    />
+                    {story.avatarImage?.url && (
+                      <img
+                        src={story.avatarImage.url}
+                        alt={story.girlName}
+                        className="w-9 h-9 rounded-full object-cover"
+                      />
+                    )}
                     <div>
-                      <p className="text-sm font-semibold text-charcoal">{story.name}</p>
+                      <p className="text-sm font-semibold text-charcoal">
+                        {story.girlName}
+                        {story.girlAge ? `, ${story.girlAge}` : ""}
+                      </p>
                       <p className="text-xs text-charcoal/50">{story.location}</p>
                     </div>
                   </div>
@@ -202,16 +237,19 @@ export default function Stories() {
         </section>
       )}
 
-      {/* ---- More stories (compact cards) ---- */}
       {visibleMore.length > 0 && (
         <section className="px-6 md:px-12 lg:px-24 py-10 grid grid-cols-2 md:grid-cols-4 gap-5">
           {visibleMore.map((story) => (
             <article
-              key={story.title}
+              key={story._id}
               className="bg-white rounded-2xl overflow-hidden border border-charcoal/10 shadow-sm"
             >
               <div className="relative h-32">
-                <img src={story.image} alt={story.title} className="w-full h-full object-cover" />
+                <img
+                  src={story.coverImage?.url || getImg("outreachImg1")}
+                  alt={story.title}
+                  className="w-full h-full object-cover"
+                />
                 <span
                   className={`absolute top-2 left-2 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full ${categoryStyles[story.category]}`}
                 >
@@ -230,7 +268,6 @@ export default function Stories() {
         </section>
       )}
 
-      {/* ---- Bottom CTA ---- */}
       <section className="relative overflow-hidden bg-lavender mx-6 md:mx-12 lg:mx-24 mb-16 rounded-2xl px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shrink-0">

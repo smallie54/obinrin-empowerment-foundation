@@ -107,7 +107,6 @@ export default function Programs() {
                 </div>
             </section>
 
-            {/* ---- What We Do ---- */}
             <section id="what-we-do" className="px-6 md:px-12 lg:px-24 py-20">
                 <div className="text-center mb-14">
                     <h2 className="font-bold text-3xl text-gray-900">
@@ -201,8 +200,6 @@ export default function Programs() {
                     </div>
                 </div>
             </section>
-
-            <Footer />
         </div>
     );
 }

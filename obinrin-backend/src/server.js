@@ -1,9 +1,15 @@
 import "dotenv/config";
+import dns from "dns";
+
+
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
+import messageRoutes from "./routes/messageRoutes.js";
 
 import connectDB from "./config/db.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
@@ -14,27 +20,31 @@ import schoolRoutes from "./routes/schoolRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js";
 import donationRoutes from "./routes/donationRoutes.js";
 import newsletterRoutes from "./routes/newsletterRoutes.js";
-
+import donorRoutes from "./routes/donorRoutes.js";
+import partnershipRoutes from "./routes/partnershipRoutes.js";
+import volunteerRoutes from "./routes/volunteerRoutes.js";
+import outreachRoutes from "./routes/outreachRoutes.js";
+import blogRoutes from "./routes/blogRoutes.js";
+import galleryRoutes from "./routes/galleryRoutes.js";
+import storiesRoutes from "./routes/storyRoutes.js"
 const app = express();
 
 app.use(helmet());
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
-// Webhooks must be mounted BEFORE express.json() for Stripe's raw-body
-// signature check to work. Paystack's route also needs the raw body
-// captured, done via the `verify` option below.
+
 app.use("/api/webhooks", webhookRoutes);
 
 app.use(
   express.json({
     verify: (req, res, buf) => {
-      req.rawBody = buf; // used by the Paystack webhook signature check
+      req.rawBody = buf; 
     },
   })
 );
 
-// Basic rate limiting on auth routes to slow brute-force attempts
+
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
@@ -46,8 +56,15 @@ app.use("/api/schools", schoolRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/donations", donationRoutes);
 app.use("/api/newsletter", newsletterRoutes);
-
+app.use("/api/donors", donorRoutes);
+app.use("/api/partnerships", partnershipRoutes);
+app.use("/api/volunteers", volunteerRoutes);
+app.use("/api/outreach", outreachRoutes);
+app.use("/api/messages", messageRoutes);
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
+app.use("/api/blog", blogRoutes);
+app.use("/api/gallery", galleryRoutes);
+app.use("/api/stories", storiesRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

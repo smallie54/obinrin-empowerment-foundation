@@ -5,7 +5,6 @@ import Donation from "../models/Donation.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// ---------- Stripe ----------
 
 export async function createStripePaymentIntent(req, res, next) {
   try {
@@ -148,6 +147,48 @@ export async function listDonations(req, res, next) {
     next(err);
   }
 }
+// ---------- Admin: manual entry + flags ----------
+
+export async function createManualDonation(req, res, next) {
+  try {
+    const { amount, currency, donorName, donorEmail, provider, dedicatedTo } = req.body;
+
+    if (!["bank_transfer", "opay", "cash", "manual"].includes(provider)) {
+      return res.status(400).json({ message: "Invalid manual provider type" });
+    }
+
+    const donation = await Donation.create({
+      amount,
+      currency: currency || "NGN",
+      donorName,
+      donorEmail,
+      provider,
+      dedicatedTo,
+      status: "successful", // manual entries are logged after payment is already confirmed
+    });
+
+    res.status(201).json(donation);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateDonationFlags(req, res, next) {
+  try {
+    const { receiptSent, thankYouSent } = req.body;
+    const update = {};
+    if (typeof receiptSent === "boolean") update.receiptSent = receiptSent;
+    if (typeof thankYouSent === "boolean") update.thankYouSent = thankYouSent;
+
+    const donation = await Donation.findByIdAndUpdate(req.params.id, update, { new: true });
+    if (!donation) return res.status(404).json({ message: "Donation not found" });
+    res.json(donation);
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ---------- Updated: donationAnalytics now includes activeDonors ----------
 
 export async function donationAnalytics(req, res, next) {
   try {
@@ -173,11 +214,15 @@ export async function donationAnalytics(req, res, next) {
       },
     ]);
 
+    const activeDonors = await Donation.distinct("donorEmail", { status: "successful" });
+
     res.json({
       totals: totals || { totalAmount: 0, totalDonations: 0 },
       byProvider,
+      activeDonors: activeDonors.length,
     });
   } catch (err) {
     next(err);
   }
 }
+

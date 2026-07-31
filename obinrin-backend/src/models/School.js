@@ -7,7 +7,9 @@ const schoolSchema = new mongoose.Schema(
     region: { type: String, trim: true }, // state/province
     address: { type: String, trim: true },
 
-    girlsSupported: { type: Number, default: 0 },
+   girlsSupported: { type: Number, default: 0 },
+    padsDistributed: { type: Number, default: 0 },
+    materialsDelivered: { type: Number, default: 0 }, 
     programsDelivered: [
       {
         type: String,
@@ -30,7 +32,7 @@ const schoolSchema = new mongoose.Schema(
     images: [
       {
         url: String,
-        publicId: String, // cloudinary public_id, for deletion
+        publicId: String, 
         caption: String,
       },
     ],

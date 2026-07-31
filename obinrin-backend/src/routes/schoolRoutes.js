@@ -7,6 +7,7 @@ import {
   deleteSchool,
   uploadSchoolImage,
   empowermentAnalytics,
+  publicImpactStats,
 } from "../controllers/schoolController.js";
 import { requireAdmin } from "../middleware/auth.js";
 import { upload } from "../config/cloudinary.js";
@@ -16,6 +17,7 @@ const router = Router();
 // Public
 router.get("/", listSchools);
 router.get("/analytics", requireAdmin, empowermentAnalytics);
+router.get("/public-stats", publicImpactStats);
 router.get("/:id", getSchool);
 
 // Admin only

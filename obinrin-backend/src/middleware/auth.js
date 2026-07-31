@@ -30,3 +30,19 @@ export function requireSuperAdmin(req, res, next) {
   }
   next();
 }
+export async function attachAdminIfPresent(req, res, next) {
+  try {
+    const header = req.headers.authorization || "";
+    const token = header.startsWith("Bearer ") ? header.slice(7) : null;
+
+    if (token) {
+      const payload = jwt.verify(token, process.env.JWT_SECRET);
+      const admin = await Admin.findById(payload.id);
+      if (admin?.isActive) {
+        req.admin = admin;
+      }
+    }
+  } catch {
+  }
+  next();
+}

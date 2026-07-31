@@ -14,11 +14,17 @@ const links = [
   { label: "Blog", to: "/blog" },
 ];
 
-export default function Nav() {
+export default function Nav({ solid = false }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="absolute top-0 left-0 right-0 z-20">
+    <header
+      className={
+        solid
+          ? "relative bg-white shadow-sm z-20"
+          : "absolute top-0 left-0 right-0 z-20"
+      }
+    >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-5">
         <Link to="/" className="flex items-center shrink-0">
           <img
@@ -37,7 +43,11 @@ export default function Nav() {
               className={({ isActive }) =>
                 `text-sm font-medium pb-1 border-b-2 transition-colors ${
                   isActive
-                    ? "text-white border-gold"
+                    ? solid
+                      ? "text-purple border-gold"
+                      : "text-white border-gold"
+                    : solid
+                    ? "text-charcoal/80 border-transparent hover:text-charcoal"
                     : "text-white/90 border-transparent hover:text-white"
                 }`
               }
@@ -57,7 +67,7 @@ export default function Nav() {
 
           <button
             onClick={() => setMenuOpen(true)}
-            className="lg:hidden text-gold/90 p-2"
+            className={`lg:hidden p-2 ${solid ? "text-charcoal" : "text-white"}`}
             aria-label="Open menu"
           >
             <Menu size={26} />

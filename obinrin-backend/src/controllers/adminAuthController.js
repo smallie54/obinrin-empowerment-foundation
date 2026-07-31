@@ -9,8 +9,7 @@ function signToken(admin) {
   });
 }
 
-// Creates a new admin account. In production, restrict this route to
-// superadmins only (see routes/adminAuth.js).
+
 export async function createAdmin(req, res, next) {
   try {
     const { name, email, password, role } = req.body;
@@ -38,9 +37,6 @@ export async function createAdmin(req, res, next) {
     next(err);
   }
 }
-
-// Step 1: verify email + password. If 2FA is enabled, don't issue a
-// full session token yet — issue a short-lived "pending2FA" token instead.
 export async function login(req, res, next) {
   try {
     const { email, password } = req.body;
@@ -68,7 +64,7 @@ export async function login(req, res, next) {
   }
 }
 
-// Step 2: verify the 6-digit TOTP code using the pending token from step 1.
+
 export async function verifyTwoFactor(req, res, next) {
   try {
     const { pendingToken, code } = req.body;
@@ -101,9 +97,7 @@ export async function verifyTwoFactor(req, res, next) {
   }
 }
 
-// Generates a new TOTP secret + QR code for the logged-in admin to scan
-// into an authenticator app. Does NOT enable 2FA yet — that happens
-// once the admin confirms with a valid code via enableTwoFactor.
+
 export async function setupTwoFactor(req, res, next) {
   try {
     const secret = speakeasy.generateSecret({
@@ -148,6 +142,46 @@ export async function enableTwoFactor(req, res, next) {
 
 export async function me(req, res) {
   res.json(publicAdmin(req.admin));
+}
+
+export async function updateProfile(req, res, next) {
+  try {
+    const { name } = req.body;
+    const admin = await Admin.findById(req.admin._id);
+    if (name) admin.name = name;
+    await admin.save();
+    res.json(publicAdmin(admin));
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function changePassword(req, res, next) {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    const admin = await Admin.findById(req.admin._id).select("+passwordHash");
+    const valid = await admin.comparePassword(currentPassword);
+    if (!valid) {
+      return res.status(401).json({ message: "Current password is incorrect" });
+    }
+
+    admin.passwordHash = await Admin.hashPassword(newPassword);
+    await admin.save();
+
+    res.json({ message: "Password updated" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function listAdmins(req, res, next) {
+  try {
+    const admins = await Admin.find().select("-passwordHash -twoFactorSecret");
+    res.json(admins);
+  } catch (err) {
+    next(err);
+  }
 }
 
 function publicAdmin(admin) {

@@ -97,7 +97,7 @@ export default function Donate() {
 
   return (
     <div>
-      <Nav />
+      <Nav solid />
 
       {/* ---- Hero ---- */}
       <section className="grid md:grid-cols-2 items-center pt-24 md:pt-28 px-6 md:px-12 lg:px-24 gap-10 pb-16">
@@ -139,12 +139,12 @@ export default function Donate() {
         </div>
       </section>
 
-      {/* ---- Choose Donation + Bank Transfer ---- */}
+ 
       <section
         id="choose-donation"
         className="px-6 md:px-12 lg:px-24 pb-16 grid lg:grid-cols-2 gap-6"
       >
-        {/* Choose Your Donation */}
+  
         <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-8">
           <div className="flex items-center gap-3 mb-6">
             <span className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center">
@@ -160,7 +160,7 @@ export default function Donate() {
                 onClick={() => handlePresetClick(amount)}
                 className={`px-4 py-3 rounded-xl border text-sm font-semibold transition ${
                   selectedAmount === amount
-                    ? "bg-purple-700 text-white border-purple-700"
+                    ? "bg-purple-700 text-gold border-purple-700"
                     : "border-gray-200 text-gray-700 hover:border-purple-300"
                 }`}
               >
@@ -184,7 +184,7 @@ export default function Donate() {
             </div>
           </div>
 
-          <button className="w-full flex items-center justify-center gap-2 bg-purple-700 text-white py-3 rounded-xl font-semibold text-sm">
+          <button className="w-full flex items-center justify-center gap-2 bg-purple-700 text-black py-3 rounded-xl font-semibold text-sm">
             Donate Now <ChevronRight size={16} />
           </button>
 
@@ -193,7 +193,6 @@ export default function Donate() {
           </p>
         </div>
 
-        {/* Bank Transfer */}
         <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-8">
           <div className="flex items-center gap-3 mb-6">
             <span className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center">
@@ -250,7 +249,6 @@ export default function Donate() {
         </div>
       </section>
 
-      {/* ---- Your Impact ---- */}
       <section className="px-6 md:px-12 lg:px-24 pb-16">
         <h2 className="font-bold text-xl text-purple-700 mb-6">Your Impact</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
@@ -339,8 +337,6 @@ export default function Donate() {
           </button>
         </form>
       </section>
-
-      <Footer />
     </div>
   );
 }

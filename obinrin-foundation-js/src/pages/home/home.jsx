@@ -1,4 +1,3 @@
-import Nav from "../../components/Nav";
 import Hero from "../../components/Hero";
 import ImpactStats from "../../components/ImpactStats";
 import Mission from "../../components/Mission";
@@ -13,12 +12,10 @@ import GetInvolved from "../../components/GetInvolved";
 import DonationWidget from "../../components/DonationWidget";
 import News from "../../components/News";
 import Newsletter from "../../components/Newsletter";
-import Footer from "../../components/Footer";
 
 export default function Home() {
   return (
     <div className="font-body">
-      <Nav />
       <Hero />
       <ImpactStats />
       <Mission />
@@ -33,7 +30,6 @@ export default function Home() {
       <DonationWidget />
       <News />
       <Newsletter />
-      <Footer />
     </div>
   );
 }
