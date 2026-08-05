@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BookOpen, Heart, Users, Award, Sparkles } from "lucide-react";
-import publicApi from "../lib/publicApi";
+import publicApi from "../../lib/public";
 
 const iconMap = {
   BookOpen,
