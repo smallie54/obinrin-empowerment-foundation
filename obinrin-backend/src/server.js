@@ -31,10 +31,35 @@ import programRoutes from "./routes/programRoutes.js";
 const app = express();
 
 app.use(helmet());
-const allowedOrigins = [
-  "http://localhost:5173",
-  process.env.CLIENT_URL,
-];
+
+const allowedOrigins = (process.env.CLIENT_URL || "")
+  .split(",")
+  .map((o) => o.trim().replace(/\/$/, ""))
+  .filter(Boolean);
+
+const vercelPreviewPattern = process.env.VERCEL_PROJECT_PREFIX
+  ? new RegExp(`^https://${process.env.VERCEL_PROJECT_PREFIX}.*\\.vercel\\.app$`)
+  : null;
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin) return callback(null, true);
+
+      const cleanOrigin = origin.replace(/\/$/, "");
+      const isExactMatch = allowedOrigins.includes(cleanOrigin);
+      const isVercelPreview = vercelPreviewPattern?.test(cleanOrigin);
+
+      if (isExactMatch || isVercelPreview) {
+        return callback(null, true);
+      }
+
+      console.warn(`CORS blocked request from origin: ${origin}`);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 
 app.use(
   cors({
