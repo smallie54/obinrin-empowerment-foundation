@@ -4,14 +4,15 @@ import {
   draftThankYouMessage,
   sendThankYouMessage,
   listRecentMessages,
+  listMessages
 } from "../controllers/messageController.js";
 import { requireAdmin } from "../middleware/auth.js";
 import { validate } from "../middleware/validate.js";
 
 const router = Router();
 
-router.use(requireAdmin); // all message actions are admin-only
-
+router.use(requireAdmin); 
+router.get("/", listMessages);
 router.post(
   "/draft",
   [body("donorName").notEmpty()],

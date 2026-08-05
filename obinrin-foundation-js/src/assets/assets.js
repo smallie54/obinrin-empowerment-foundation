@@ -19,6 +19,7 @@ import mission from "./imges/mission/books.jpg"
 import successStory1 from "./imges/stories/successStory.jpg"
 import successStory2 from "./imges/stories/successStory2.jpg"
 import successStory3 from "./imges/stories/successStory3.jpg"
+// import logo from "./imges/logo.jpg"
 import logo from "./imges/logo.png"
 import girls4 from "./imges/girlsImg/girlsImg4.jpg"
 
@@ -109,6 +110,6 @@ export const webImg = [{
 },
 {
     name: "logoimg",
-    image: logo
+    Image: logo
 }
 ]

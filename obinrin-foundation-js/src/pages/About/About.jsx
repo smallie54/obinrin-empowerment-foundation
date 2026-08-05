@@ -3,8 +3,6 @@ import { ArrowRight, Target, Eye, Flag, Heart } from "lucide-react";
 import { webImg } from "../../assets/assets";
 import Nav from "../../components/Nav";
 
-// Small helper so the JSX below can just say getImg("girlsImg1")
-// instead of repeating the .find() lookup everywhere.
 function getImg(name) {
   return webImg.find((item) => item.name === name)?.Image;
 }
@@ -64,7 +62,6 @@ export default function About() {
   return (
     <div>
       <Nav />
-      {/* ---- Hero ---- */}
       <section className="relative min-h-[480px] md:min-h-[560px] overflow-hidden">
         <img
           src={getImg("headerImg") || getImg("girlsImg1")}
@@ -104,7 +101,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* ---- Our Story + Mission/Vision/Goal ---- */}
       <section
         id="our-story"
         className="px-6 md:px-12 lg:px-24 py-20 grid md:grid-cols-2 gap-12"
@@ -132,7 +128,7 @@ export default function About() {
           </div>
           <div className="mt-6">
             <p className="font-heading font-bold text-lg italic text-charcoal">
-              Adeleke Victor
+             Adedire Aanuoluwa
             </p>
             <p className="text-xs text-purple">Founder</p>
           </div>

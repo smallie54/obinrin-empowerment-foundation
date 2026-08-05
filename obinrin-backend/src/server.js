@@ -27,6 +27,7 @@ import outreachRoutes from "./routes/outreachRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
 import storiesRoutes from "./routes/storyRoutes.js"
+import programRoutes from "./routes/programRoutes.js";
 const app = express();
 
 app.use(helmet());
@@ -82,7 +83,7 @@ app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 app.use("/api/blog", blogRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/stories", storiesRoutes);
-
+app.use("/api/programs", programRoutes);
 app.use(notFound);
 app.use(errorHandler);
 

@@ -72,3 +72,17 @@ export async function listRecentMessages(req, res, next) {
     next(err);
   }
 }
+
+export async function listMessages(req, res, next) {
+  try {
+    const { status, channel } = req.query;
+    const filter = {};
+    if (status) filter.status = status;
+    if (channel) filter.channel = channel;
+
+    const messages = await Message.find(filter).sort({ createdAt: -1 });
+    res.json(messages);
+  } catch (err) {
+    next(err);
+  }
+}

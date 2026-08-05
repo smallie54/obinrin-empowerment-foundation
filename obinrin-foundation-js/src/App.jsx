@@ -22,6 +22,10 @@ import Stories from "./pages/Admin/Stories";
 import PublicLayout from "./layouts/PublicLayout";
 import ProtectedRoute from "./admin/auth/ProtectedRoute"
 import AdminLayout from "./layouts/AdminLayout"
+import Events from "./pages/admin/Events";
+import ThankYouMessages from "./pages/admin/ThankYouMessages";
+import AdminPrograms from "./pages/admin/Programs";
+import OutreachPlanning from "./pages/admin/OutreachPlanning";
 export default function App() {
   return (
     <Routes>
@@ -49,6 +53,10 @@ export default function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="donations" element={<Donations />} />
           <Route path="stories" element={<Stories />} />
+          <Route path="events" element={<Events />} />
+          <Route path="messages" element={<ThankYouMessages />} />
+          <Route path="programs" element={<AdminPrograms />} />
+          <Route path="outreach" element={<OutreachPlanning />} />
         </Route>
       </Route>
     </Routes>

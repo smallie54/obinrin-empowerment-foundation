@@ -22,15 +22,15 @@ export default function Nav({ solid = false }) {
       className={
         solid
           ? "relative bg-white shadow-sm z-20"
-          : "absolute top-0 left-0 right-0 z-20"
+          : "absolute top-0 left-0 right-0 z-20 "
       }
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-5">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-5 ">
         <Link to="/" className="flex items-center shrink-0">
           <img
             src={Logo}
             alt="Obinrin Empowerment Foundation"
-            className="h-10 w-auto object-contain"
+            className="h-16 w-auto object-contain"
           />
         </Link>
 
@@ -41,12 +41,11 @@ export default function Nav({ solid = false }) {
               to={link.to}
               end={link.to === "/"}
               className={({ isActive }) =>
-                `text-sm font-medium pb-1 border-b-2 transition-colors ${
-                  isActive
-                    ? solid
-                      ? "text-purple border-gold"
-                      : "text-white border-gold"
-                    : solid
+                `text-sm font-medium pb-1 border-b-2 transition-colors ${isActive
+                  ? solid
+                    ? "text-purple border-gold"
+                    : "text-white border-gold"
+                  : solid
                     ? "text-charcoal/80 border-transparent hover:text-charcoal"
                     : "text-white/90 border-transparent hover:text-white"
                 }`
@@ -111,8 +110,7 @@ export default function Nav({ solid = false }) {
                     end={link.to === "/"}
                     onClick={() => setMenuOpen(false)}
                     className={({ isActive }) =>
-                      `py-3 border-b border-charcoal/10 font-medium transition-colors ${
-                        isActive ? "text-purple" : "text-charcoal hover:text-purple"
+                      `py-3 border-b border-charcoal/10 font-medium transition-colors ${isActive ? "text-purple" : "text-charcoal hover:text-purple"
                       }`
                     }
                   >
