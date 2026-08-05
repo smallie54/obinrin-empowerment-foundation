@@ -25,7 +25,7 @@ import AdminLayout from "./layouts/AdminLayout"
 import Events from "./pages/Admin/Events";
 import ThankYouMessages from "./pages/Admin/ThankYouMessages";
 import AdminPrograms from "./pages/Admin/Programs";
-import OutreachPlanning from "./pages/admin/OutreachPlanning";
+import OutreachPlanning from "./pages/Admin/OutreachPlanning";
 export default function App() {
   return (
     <Routes>
