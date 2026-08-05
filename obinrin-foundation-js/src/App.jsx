@@ -22,9 +22,9 @@ import Stories from "./pages/Admin/Stories";
 import PublicLayout from "./layouts/PublicLayout";
 import ProtectedRoute from "./admin/auth/ProtectedRoute"
 import AdminLayout from "./layouts/AdminLayout"
-import Events from "./pages/admin/Events";
-import ThankYouMessages from "./pages/admin/ThankYouMessages";
-import AdminPrograms from "./pages/admin/Programs";
+import Events from "./pages/Admin/Events";
+import ThankYouMessages from "./pages/Admin/ThankYouMessages";
+import AdminPrograms from "./pages/Admin/Programs";
 import OutreachPlanning from "./pages/admin/OutreachPlanning";
 export default function App() {
   return (
