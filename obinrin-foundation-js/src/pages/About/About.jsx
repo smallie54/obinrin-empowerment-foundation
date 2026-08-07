@@ -61,7 +61,6 @@ const impactStats = [
 export default function About() {
   return (
     <div>
-      <Nav />
       <section className="relative min-h-[480px] md:min-h-[560px] overflow-hidden">
         <img
           src={getImg("headerImg") || getImg("girlsImg1")}
