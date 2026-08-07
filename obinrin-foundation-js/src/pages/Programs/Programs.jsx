@@ -43,7 +43,7 @@ export default function Programs() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-charcoal via-charcoal/80 to-transparent" />
 
-        <div className="relative px-6 md:px-12 lg:px-24 max-w-xl pt-32 pb-20">
+        <div className="relative px-6 md:px-12 lg:px-24 max-w-2xl pt-32 pb-20">
           <p className="text-gold text-xs font-semibold tracking-widest mb-4">
             OUR PROGRAMS
           </p>
@@ -53,13 +53,13 @@ export default function Programs() {
             Transforming <span className="text-gold">Futures.</span>
           </h1>
           <span className="block w-24 h-1 bg-gold rounded-full my-6" />
-          <p className="text-white/80 max-w-lg">
+          <p className="text-white/80 max-w-xl text-base md:text-lg leading-relaxed">
             Our programs are designed to address the real challenges girls
             face and provide them with the tools, opportunities, and support
             they need to thrive.
           </p>
           <div className="flex flex-wrap gap-3 mt-8">
-            
+            <a
               href="#what-we-do"
               className="self-start inline-flex items-center gap-2 bg-purple text-white px-6 py-3 rounded-full font-semibold text-sm"
             >
@@ -74,7 +74,6 @@ export default function Programs() {
           </div>
         </div>
       </section>
-
       {/* ---- What We Do ---- */}
       <div id="what-we-do" className="pt-20 pb-20 px-6 max-w-6xl mx-auto">
         <div className="text-center mb-16">

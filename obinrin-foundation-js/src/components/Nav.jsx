@@ -22,15 +22,15 @@ export default function Nav({ solid = false }) {
       className={
         solid
           ? "relative bg-white shadow-sm z-20"
-          : "absolute top-0 left-0 right-0 z-20 "
+          : "absolute top-0 left-0 right-0 z-20"
       }
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-5 ">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-6">
         <Link to="/" className="flex items-center shrink-0">
           <img
             src={Logo}
             alt="Obinrin Empowerment Foundation"
-            className="h-16 w-auto object-contain"
+            className="h-20 w-auto object-contain"
           />
         </Link>
 
@@ -92,7 +92,7 @@ export default function Nav({ solid = false }) {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-10">
-                <img src={Logo} alt="Obinrin Empowerment Foundation" className="h-8 w-auto" />
+                <img src={Logo} alt="Obinrin Empowerment Foundation" className="h-10 w-auto" />
                 <button
                   onClick={() => setMenuOpen(false)}
                   className="text-charcoal p-2"
