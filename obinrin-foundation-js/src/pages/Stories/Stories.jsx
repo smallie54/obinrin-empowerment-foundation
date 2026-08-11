@@ -126,8 +126,8 @@ export default function Stories() {
 
   return (
     <div>
-      <section className="relative">
-        <div className="h-64 md:h-72 relative overflow-hidden">
+ <section className="relative">
+        <div className="h-96 sm:h-80 md:h-72 relative overflow-hidden">
           <img
             src={getImg("girlsImg2")}
             alt="Girls in a classroom"
