@@ -1,6 +1,6 @@
 // controllers/messageController.js
 import Message from "../models/message.js";
-import { generateThankYouDraft } from "../config/geminiService.js";
+// import { generateThankYouDraft } from "../config/geminiService.js";
 import { generateThankYouDraft } from "../config/groqServices.js";
 import { sendEmail } from "../config/mailer.js";
 
