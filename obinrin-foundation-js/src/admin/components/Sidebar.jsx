@@ -41,11 +41,10 @@ const navItems = [
 export default function Sidebar({ mobile = false }) {
   return (
     <aside
-      className={`${
-        mobile ? "flex" : "hidden lg:flex"
-      } flex-col w-64 shrink-0 bg-purple text-white/80 min-h-screen`}
+      className={`${mobile ? "flex" : "hidden lg:flex"
+        } flex-col w-64 shrink-0 bg-purple text-white/80 h-screen`}
     >
-      <div className="flex items-center gap-3 px-6 py-6 border-b border-white/10">
+      <div className="flex items-center gap-3 px-6 py-6 border-b border-white/10 shrink-0">
         <img src={getImg("logoimg")} alt="Obinrin" className="h-9 w-9 rounded-full object-cover" />
         <div>
           <p className="font-heading font-bold text-white text-sm leading-tight">
@@ -57,17 +56,16 @@ export default function Sidebar({ mobile = false }) {
         </div>
       </div>
 
-      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+      <nav className="flex-1 min-h-0 py-4 px-3 space-y-1 overflow-y-auto">
         {navItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             end={item.end}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                isActive
-                  ? "bg-white text-purple"
-                  : "text-white/75 hover:bg-white/10 hover:text-white"
+              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
+                ? "bg-white text-purple"
+                : "text-white/75 hover:bg-white/10 hover:text-white"
               }`
             }
           >
@@ -77,7 +75,7 @@ export default function Sidebar({ mobile = false }) {
         ))}
       </nav>
 
-      <div className="m-4 rounded-2xl bg-white/10 p-5">
+      <div className="m-4 rounded-2xl bg-white/10 p-5 shrink-0">
         <p className="text-sm text-white/90 leading-snug">
           You are creating brighter futures with every decision.
         </p>
