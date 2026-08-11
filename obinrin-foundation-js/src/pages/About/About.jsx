@@ -231,3 +231,7 @@ export default function About() {
     </div>
   );
 }
+
+// fix navbar to be sticky and have a background color when scrolling down
+// update images to be more relevant to the content
+// fix program page for image to show properly on both mobile and desktop

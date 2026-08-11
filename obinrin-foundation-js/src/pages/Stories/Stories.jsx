@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Search, Heart, ArrowRight, Star } from "lucide-react";
 import { webImg } from "../../assets/assets";
-import Nav from "../../components/Nav";
 import publicApi from "../../lib/public";
 
 function getImg(name) {
@@ -127,9 +126,7 @@ export default function Stories() {
 
   return (
     <div>
-      <Nav />
-
-      <section className="relative pt-20 md:pt-0">
+      <section className="relative">
         <div className="h-64 md:h-72 relative overflow-hidden">
           <img
             src={getImg("girlsImg2")}
@@ -137,7 +134,7 @@ export default function Stories() {
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-charcoal via-charcoal/80 to-transparent" />
-          <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-12 lg:px-24 max-w-2xl mt-10">
+          <div className="absolute inset-0 flex flex-col justify-end px-6 md:px-12 lg:px-24 max-w-2xl pb-8">
             <p className="text-gold text-xs font-semibold tracking-widest mb-3">
               OUR STORIES
             </p>

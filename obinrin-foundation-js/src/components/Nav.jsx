@@ -25,12 +25,12 @@ export default function Nav({ solid = false }) {
           : "absolute top-0 left-0 right-0 z-20"
       }
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-6">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4 sm:py-6">
         <Link to="/" className="flex items-center shrink-0">
           <img
             src={Logo}
             alt="Obinrin Empowerment Foundation"
-            className="h-20 w-auto object-contain"
+          className="h-14 sm:h-16 lg:h-20 w-auto object-contain"
           />
         </Link>
 
