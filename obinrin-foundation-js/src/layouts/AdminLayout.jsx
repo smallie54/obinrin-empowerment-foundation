@@ -9,7 +9,7 @@ export default function AdminLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-lavender/20">
+    <div className="flex h-screen overflow-hidden bg-lavender/20">
       <Sidebar />
 
       <AnimatePresence>
@@ -44,9 +44,9 @@ export default function AdminLayout() {
         )}
       </AnimatePresence>
 
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 flex flex-col">
         <Topbar onOpenMobileMenu={() => setMobileOpen(true)} />
-        <main className="p-4 sm:p-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
           <Outlet />
         </main>
       </div>
