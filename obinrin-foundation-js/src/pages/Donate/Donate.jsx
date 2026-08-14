@@ -77,7 +77,7 @@ export default function Donate() {
   const [copied, setCopied] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
 
-  const accountNumber = "8028468036";
+  const accountNumber = "0125502428";
 
   function handleCopy() {
     navigator.clipboard.writeText(accountNumber);
@@ -223,7 +223,7 @@ export default function Donate() {
               <Users size={16} className="text-purple-700" />
               <div>
                 <p className="text-xs text-gray-500">Account Name</p>
-                <p className="font-bold text-gray-900">Adefagbayi Praise</p>
+                <p className="font-bold text-gray-900">Obinrin Empowerment Foundation</p>
               </div>
             </div>
 
