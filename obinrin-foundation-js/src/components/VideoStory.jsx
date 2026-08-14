@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import publicApi from "../lib/public";
-import fallbackIllustration from "../assets/illustrations/video-fallback.svg"; // see note below
+import fallbackIllustration from "../assets/illustrations/video-fallback.jpg"; 
 
 function getEmbedUrl(url) {
   if (!url) return null;
@@ -9,7 +9,7 @@ function getEmbedUrl(url) {
   if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
   if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
-  return url; // fall back to the raw URL if it doesn't match either pattern
+  return url; 
 }
 
 export default function VideoStory() {
