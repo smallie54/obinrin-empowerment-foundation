@@ -231,7 +231,7 @@ export default function Donate() {
               <Landmark size={16} className="text-purple-700" />
               <div>
                 <p className="text-xs text-gray-500">Bank</p>
-                <p className="font-bold text-gray-900">Opay</p>
+                <p className="font-bold text-gray-900">Guaranty Trust Bank</p>
               </div>
             </div>
           </div>
