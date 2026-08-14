@@ -29,6 +29,7 @@ import OutreachPlanning from "./pages/Admin/OutreachPlanning";
 import Partnerships from "./pages/Admin/Partnerships";
 import Volunteers from "./pages/Admin/Volunteers";
 import ImpactLocations from "./pages/Admin/ImpactLocations";
+import Videos from "./pages/Admin/Videos";
 export default function App() {
   return (
     <Routes>
@@ -63,6 +64,7 @@ export default function App() {
           <Route path="partnerships" element={<Partnerships />} />
           <Route path="volunteers" element={<Volunteers />} />
           <Route path="impactlocations" element={<ImpactLocations />} />
+          <Route path="videos" element={<Videos />} />
         </Route>
       </Route>
     </Routes>
