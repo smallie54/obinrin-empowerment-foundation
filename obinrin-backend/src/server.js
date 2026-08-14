@@ -28,6 +28,8 @@ import blogRoutes from "./routes/blogRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
 import storiesRoutes from "./routes/storyRoutes.js"
 import programRoutes from "./routes/programRoutes.js";
+import impactLocationRoutes from "./routes/impactLocationRoutes.js";
+import videoRoutes from "./routes/videoRoutes.js";
 const app = express();
 
 app.use(helmet());
@@ -97,6 +99,8 @@ app.use("/api/blog", blogRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/stories", storiesRoutes);
 app.use("/api/programs", programRoutes);
+app.use("/api/impact-locations", impactLocationRoutes);
+app.use("/api/videos", videoRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
