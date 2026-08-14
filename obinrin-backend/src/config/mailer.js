@@ -1,39 +1,39 @@
-import nodemailer from "nodemailer";
+// config/mailer.js
+import { Resend } from 'resend';
 
-// secure must be true for port 465 (implicit TLS) and false for port 587
-// (STARTTLS). Hardcoding this wrong is a common cause of emails that
-// appear to "send" successfully but never actually arrive.
-const port = Number(process.env.SMTP_PORT) || 587;
+// Initialize Resend
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port,
-  secure: port === 465,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+export async function sendEmail({ to, subject, text, html }) {
+  try {
+    if (!to || !subject) {
+      throw new Error('Missing required fields: to or subject');
+    }
 
-transporter.verify((err) => {
-  if (err) {
-    console.error("SMTP connection failed at startup:", err.message);
-  } else {
-    console.log("SMTP connection verified — ready to send email.");
+    const emailContent = html || text;
+    if (!emailContent) {
+      throw new Error('Either html or text content is required');
+    }
+
+    const { data, error } = await resend.emails.send({
+      from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
+      to: [to],
+      subject: subject,
+      html: html || text, // Resend prefers HTML
+      text: text || undefined,
+    });
+
+    if (error) {
+      console.error('Resend error:', error);
+      throw new Error(error.message);
+    }
+
+    console.log(`✅ Email sent: ${data.id} to ${to}`);
+    return data;
+  } catch (error) {
+    console.error("❌ Failed to send email:", error.message);
+    throw new Error(`Email sending failed: ${error.message}`);
   }
-});
-
-export async function sendEmail({ to, subject, html }) {
-  const info = await transporter.sendMail({
-    from: process.env.EMAIL_FROM,
-    to,
-    subject,
-    html,
-  });
-
-  console.log(`Email sent: ${info.messageId} to ${to}`);
-
-  return info;
 }
 
-export default transporter;
+export default resend;

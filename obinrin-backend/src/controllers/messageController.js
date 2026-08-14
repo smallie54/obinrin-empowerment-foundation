@@ -1,26 +1,17 @@
 // controllers/messageController.js
-import Message from "../models/message.js";
-// import { generateThankYouDraft } from "../config/geminiService.js";
-import { generateThankYouDraft } from "../config/groqServices.js";
-import { sendEmail } from "../config/mailer.js";
-
-export async function draftThankYouMessage(req, res, next) {
-  try {
-    const { donorName, amount, currency, channel } = req.body;
-    const draft = await generateThankYouDraft({ donorName, amount, currency, channel });
-    res.json({ draft });
-  } catch (err) {
-    next(err);
-  }
-}
-
 export async function sendThankYouMessage(req, res, next) {
   try {
     const { donorEmail, donorName, channel, subject, body } = req.body;
 
+    // Validate required fields
+    if (!donorEmail || !donorName || !channel || !body) {
+      return res.status(400).json({
+        error: 'Missing required fields',
+        required: ['donorEmail', 'donorName', 'channel', 'body']
+      });
+    }
+
     if (channel === "sms") {
-      // No SMS provider wired up yet — log as pending rather than
-      // pretending it actually sent.
       const message = await Message.create({
         donorName,
         donorEmail,
@@ -36,19 +27,48 @@ export async function sendThankYouMessage(req, res, next) {
       });
     }
 
+    // Email channel
+    if (channel !== "email") {
+      return res.status(400).json({
+        error: 'Invalid channel. Must be "email" or "sms"'
+      });
+    }
+
     try {
-      await sendEmail({ to: donorEmail, subject, text: body });
+      // Send email - support both text and html
+      const emailResult = await sendEmail({ 
+        to: donorEmail, 
+        subject: subject || 'Thank You for Your Donation', 
+        text: body,
+        html: body // If body contains HTML
+      });
+
       const message = await Message.create({
         donorName,
         donorEmail,
         channel,
-        subject,
+        subject: subject || 'Thank You for Your Donation',
         body,
         status: "sent",
         sentBy: req.admin._id,
       });
-      return res.json({ message: "Sent!", record: message });
+
+      return res.status(200).json({ 
+        success: true,
+        message: "Email sent successfully!", 
+        record: message,
+        emailId: emailResult.messageId || emailResult.id
+      });
     } catch (emailErr) {
+      // Log the actual error
+      console.error('Email send error:', {
+        error: emailErr.message,
+        stack: emailErr.stack,
+        to: donorEmail,
+        subject
+      });
+
+      // Save failed attempt
       await Message.create({
         donorName,
         donorEmail,
@@ -57,33 +77,17 @@ export async function sendThankYouMessage(req, res, next) {
         body,
         status: "failed",
         sentBy: req.admin._id,
+        error: emailErr.message // Add error field to schema
       });
-      throw emailErr;
+
+      // Return specific error
+      return res.status(500).json({
+        error: 'Failed to send email',
+        details: emailErr.message
+      });
     }
   } catch (err) {
-    next(err);
-  }
-}
-
-export async function listRecentMessages(req, res, next) {
-  try {
-    const messages = await Message.find().sort({ createdAt: -1 }).limit(10);
-    res.json(messages);
-  } catch (err) {
-    next(err);
-  }
-}
-
-export async function listMessages(req, res, next) {
-  try {
-    const { status, channel } = req.query;
-    const filter = {};
-    if (status) filter.status = status;
-    if (channel) filter.channel = channel;
-
-    const messages = await Message.find(filter).sort({ createdAt: -1 });
-    res.json(messages);
-  } catch (err) {
+    console.error('Controller error:', err);
     next(err);
   }
 }
