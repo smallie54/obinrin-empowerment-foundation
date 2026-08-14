@@ -14,7 +14,8 @@ cloudinary.v2.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const storage = new CloudinaryStorage({
+// ---- Images (unchanged) ----
+const imageStorage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "obinrin-foundation",
@@ -24,8 +25,23 @@ const storage = new CloudinaryStorage({
 });
 
 export const upload = multer({
-  storage,
+  storage: imageStorage,
   limits: { fileSize: 8 * 1024 * 1024 }, // 8MB
+});
+
+// ---- Videos (new) ----
+const videoStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "obinrin-foundation/videos",
+    resource_type: "video", // critical — without this, Cloudinary tries to process video files as images and rejects them
+    allowed_formats: ["mp4", "mov", "webm"],
+  },
+});
+
+export const uploadVideo = multer({
+  storage: videoStorage,
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB — videos are much bigger than images
 });
 
 export default cloudinary.v2;

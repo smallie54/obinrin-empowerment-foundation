@@ -95,7 +95,6 @@ export async function uploadVideoThumbnail(req, res, next) {
   }
 }
 
-// Public — only the featured, published video (what VideoStory shows)
 export async function publicFeaturedVideo(req, res, next) {
   try {
     const video = await Video.findOne({ status: "published", featured: true });

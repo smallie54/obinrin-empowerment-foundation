@@ -7,9 +7,9 @@ const videoSchema = new mongoose.Schema(
     description: { type: String, trim: true },
 
     sourceType: { type: String, enum: ["url", "upload"], required: true },
-    videoUrl: { type: String }, // used when sourceType === "url" (YouTube/Vimeo link)
+    videoUrl: { type: String }, // YouTube/Vimeo link, used when sourceType === "url"
     uploadedVideo: {
-      url: String, // used when sourceType === "upload" (Cloudinary)
+      url: String,
       publicId: String,
     },
 
@@ -18,7 +18,7 @@ const videoSchema = new mongoose.Schema(
       publicId: String,
     },
 
-    featured: { type: Boolean, default: false }, // the one shown in VideoStory
+    featured: { type: Boolean, default: false },
     status: { type: String, enum: ["draft", "published"], default: "draft" },
 
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" },
