@@ -26,6 +26,8 @@ import Events from "./pages/Admin/Events";
 import ThankYouMessages from "./pages/Admin/ThankYouMessages";
 import AdminPrograms from "./pages/Admin/Programs";
 import OutreachPlanning from "./pages/Admin/OutreachPlanning";
+import Partnerships from "./pages/Admin/Partnerships";
+import Volunteers from "./pages/Admin/Volunteers";
 export default function App() {
   return (
     <Routes>
@@ -57,6 +59,8 @@ export default function App() {
           <Route path="messages" element={<ThankYouMessages />} />
           <Route path="programs" element={<AdminPrograms />} />
           <Route path="outreach" element={<OutreachPlanning />} />
+          <Route path="partnerships" element={<Partnerships />} />
+          <Route path="volunteers" element={<Volunteers />} />
         </Route>
       </Route>
     </Routes>
