@@ -1,65 +1,89 @@
-// controllers/messageController.js - Updated
+ controllers/messageController.js
+import Message from "../models/message.js";
+// import { generateThankYouDraft } from "../config/geminiService.js";
+import { generateThankYouDraft } from "../config/groqServices.js";
+import { sendEmail } from "../config/mailer.js";
+
+export async function draftThankYouMessage(req, res, next) {
+  try {
+    const { donorName, amount, currency, channel } = req.body;
+    const draft = await generateThankYouDraft({ donorName, amount, currency, channel });
+    res.json({ draft });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function sendThankYouMessage(req, res, next) {
+  try {
+    const { donorEmail, donorName, channel, subject, body } = req.body;
+
+    if (channel === "sms") {
+      // No SMS provider wired up yet — log as pending rather than
+      // pretending it actually sent.
+      const message = await Message.create({
+        donorName,
+        donorEmail,
+        channel,
+        subject,
+        body,
+        status: "pending",
+        sentBy: req.admin._id,
+      });
+      return res.json({
+        message: "SMS provider not connected yet — saved as pending.",
+        record: message,
+      });
+    }
+
+    try {
+      await sendEmail({ to: donorEmail, subject, text: body });
+      const message = await Message.create({
+        donorName,
+        donorEmail,
+        channel,
+        subject,
+        body,
+        status: "sent",
+        sentBy: req.admin._id,
+      });
+      return res.json({ message: "Sent!", record: message });
+    } catch (emailErr) {
+      await Message.create({
+        donorName,
+        donorEmail,
+        channel,
+        subject,
+        body,
+        status: "failed",
+        sentBy: req.admin._id,
+      });
+      throw emailErr;
+    }
+  } catch (err) {
+    next(err);
+  }
+}
 
 export async function listRecentMessages(req, res, next) {
   try {
-    const messages = await Message.find()
-      .sort({ createdAt: -1 })
-      .limit(10)
-      .populate('sentBy', 'name email')
-      .lean(); // Use .lean() for plain JavaScript objects
-
-    // Always return an array, even if empty
-    return res.json({
-      success: true,
-      data: messages || [], // Ensure it's always an array
-      count: messages.length
-    });
+    const messages = await Message.find().sort({ createdAt: -1 }).limit(10);
+    res.json(messages);
   } catch (err) {
-    console.error('List recent messages error:', err);
-    return res.status(500).json({
-      success: false,
-      error: 'Failed to fetch messages',
-      data: [] // Return empty array on error
-    });
+    next(err);
   }
 }
 
 export async function listMessages(req, res, next) {
   try {
-    const { status, channel, limit = 50, page = 1 } = req.query;
+    const { status, channel } = req.query;
     const filter = {};
-    
     if (status) filter.status = status;
     if (channel) filter.channel = channel;
 
-    const skip = (page - 1) * limit;
-
-    const [messages, total] = await Promise.all([
-      Message.find(filter)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(Number(limit))
-        .populate('sentBy', 'name email')
-        .lean(), // Use .lean() for better performance
-      Message.countDocuments(filter)
-    ]);
-
-    return res.json({
-      success: true,
-      data: messages || [], // Ensure it's always an array
-      pagination: {
-        total,
-        page: Number(page),
-        limit: Number(limit),
-        pages: Math.ceil(total / limit)
-      }
-    });
+    const messages = await Message.find(filter).sort({ createdAt: -1 });
+    res.json(messages);
   } catch (err) {
-    console.error('List messages error:', err);
-    return res.status(500).json({
-      success: false,
-      error: 'Failed to fetch messages',
-      data: [] // Return empty array on error
-    });
+    next(err);
   }
 }
