@@ -14,7 +14,8 @@ import {
   BarChart3,
   Settings,
   Book,
-  School
+  School,
+  LocationEdit
 } from "lucide-react";
 import { webImg } from "../../assets/assets";
 
@@ -36,6 +37,7 @@ const navItems = [
   { label: "Reports & Analytics", to: "/admin/Reports", icon: BarChart3 },
   { label: "Settings", to: "/admin/Settings", icon: Settings },
   { label: "Schools", to: "/admin/Schools", icon: School },
+  { label: "Locations", to: "/admin/ImpactLocations", icon: LocationEdit },
 ];
 
 export default function Sidebar({ mobile = false }) {

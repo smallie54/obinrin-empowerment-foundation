@@ -1,43 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ComposableMap, Geographies, Geography, Marker } from "@vnedyalk0v/react19-simple-maps";
-import nigeriaStates from "../assets/nigeria-states.json"; // adjust path to match your project
-
-const cities = [
-  {
-    state: "Lagos",
-    coordinates: [3.3792, 6.5244],
-    girls: "24,563",
-    schools: "52",
-    teams: "18",
-  },
-  {
-    state: "Kano",
-    coordinates: [8.5167, 12.0],
-    girls: "15,204",
-    schools: "34",
-    teams: "11",
-  },
-  {
-    state: "Rivers",
-    coordinates: [7.0134, 4.8156],
-    girls: "12,890",
-    schools: "29",
-    teams: "9",
-  },
-  {
-    state: "Oyo",
-    coordinates: [3.9470, 8.1574],
-    girls: "9,340",
-    schools: "21",
-    teams: "7",
-  },
-];
-
-const activeStateNames = cities.map((c) => c.state);
+import nigeriaStates from "../assets/nigeria-states.json";
+import publicApi from "../lib/public";
 
 export default function ImpactMap() {
   const [active, setActive] = useState(null);
+  const [outreach, setOutreach] = useState([]);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    publicApi.get("/impact-locations/public")
+      .then((res) => setOutreach(res.data))
+      .catch(() => setError(true));
+  }, []);
+
+  const activeStateNames = outreach.map((o) => o.stateName);
 
   return (
     <section className="bg-charcoal py-24">
@@ -49,6 +27,17 @@ export default function ImpactMap() {
           Hover a marker to see program reach in that state.
         </p>
 
+        {error && (
+          <p className="text-center text-xs text-white/40 mb-6">
+            Live outreach data is temporarily unavailable.
+          </p>
+        )}
+        {!error && outreach.length === 0 && (
+          <p className="text-center text-xs text-white/40 mb-6">
+            Outreach locations coming soon — check back for updates.
+          </p>
+        )}
+
         <div className="relative w-full aspect-[16/10] rounded-3xl bg-white/5 border border-white/10 overflow-hidden">
           <ComposableMap
             projection="geoMercator"
@@ -58,10 +47,7 @@ export default function ImpactMap() {
             <Geographies geography={nigeriaStates}>
               {({ geographies }) =>
                 geographies.map((geo) => {
-                  // geoBoundaries files typically name this property
-                  // "shapeName" — check your downloaded file if this
-                  // doesn't highlight correctly, and adjust the key below.
-                  const stateName = geo.properties.shapeName;
+                  const stateName = geo.properties.shapeName; // confirm this matches your downloaded file
                   const isActive = activeStateNames.includes(stateName);
                   return (
                     <Geography
@@ -81,11 +67,11 @@ export default function ImpactMap() {
               }
             </Geographies>
 
-            {cities.map((c) => (
+            {outreach.map((o) => (
               <Marker
-                key={c.state}
-                coordinates={c.coordinates}
-                onMouseEnter={() => setActive(c.state)}
+                key={o._id}
+                coordinates={[o.longitude, o.latitude]}
+                onMouseEnter={() => setActive(o.stateName)}
                 onMouseLeave={() => setActive(null)}
               >
                 <g style={{ cursor: "pointer" }}>
@@ -101,29 +87,31 @@ export default function ImpactMap() {
 
           <AnimatePresence>
             {active &&
-              cities
-                .filter((c) => c.state === active)
-                .map((c) => (
+              outreach
+                .filter((o) => o.stateName === active)
+                .map((o) => (
                   <motion.div
-                    key={c.state}
+                    key={o._id}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                     className="pointer-events-none absolute top-4 right-4 w-52 bg-white rounded-xl p-4 shadow-2xl text-left z-10"
                   >
-                    <p className="font-heading font-bold text-charcoal mb-2">{c.state}</p>
+                    <p className="font-heading font-bold text-charcoal mb-2">{o.stateName}</p>
                     <div className="space-y-1 text-sm text-charcoal/70">
                       <div className="flex justify-between">
                         <span>Girls Supported</span>
-                        <span className="font-semibold text-purple">{c.girls}</span>
+                        <span className="font-semibold text-purple">
+                          {o.girlsSupported.toLocaleString()}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Schools</span>
-                        <span className="font-semibold text-purple">{c.schools}</span>
+                        <span className="font-semibold text-purple">{o.schools}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Volunteer Teams</span>
-                        <span className="font-semibold text-purple">{c.teams}</span>
+                        <span className="font-semibold text-purple">{o.volunteerTeams}</span>
                       </div>
                     </div>
                   </motion.div>
