@@ -1,5 +1,5 @@
 // controllers/impactLocationController.js
-import ImpactLocation from "../models/ImpactLocation.js";
+import ImpactLocation from "../models/impactLocation.js";
 import School from "../models/School.js";
 import Outreach from "../models/Outreach.js";
 
