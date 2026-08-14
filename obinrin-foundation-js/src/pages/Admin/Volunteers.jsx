@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, UserPlus, Link2 } from "lucide-react";
 import api from "../../admin/api/client";
 import Modal from "../../admin/components/Modal";
-import ConfirmDialog from "../../admin/components/ConfirmDialog";
+import ConfirmDialog from "../../admin/components/ConfirmDialogue";
 
 const statusStyle = {
   available: "bg-success/15 text-success",

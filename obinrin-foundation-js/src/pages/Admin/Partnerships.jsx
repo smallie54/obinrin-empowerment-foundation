@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Plus, Pencil, Trash2, Handshake } from "lucide-react";
 import api from "../../admin/api/client";
 import Modal from "../../admin/components/Modal";
-import ConfirmDialog from "../../admin/components/ConfirmDialog";
+import ConfirmDialog from "../../admin/components/ConfirmDialogue";
 
 function formatDate(dateStr) {
   if (!dateStr) return "—";
