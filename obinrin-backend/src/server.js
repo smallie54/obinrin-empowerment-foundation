@@ -65,10 +65,10 @@ app.use(
 
 
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+app.set("trust proxy", 1);
 
 
 app.use("/api/webhooks", webhookRoutes);
-
 app.use(
   express.json({
     verify: (req, res, buf) => {
