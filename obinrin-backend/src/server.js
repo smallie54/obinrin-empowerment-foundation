@@ -30,6 +30,7 @@ import storiesRoutes from "./routes/storyRoutes.js"
 import programRoutes from "./routes/programRoutes.js";
 import impactLocationRoutes from "./routes/impactLocationRoutes.js";
 import videoRoutes from "./routes/videoRoutes.js";
+import searchRoutes from "./routes/searchRoutes.js";
 const app = express();
 
 app.use(helmet());
@@ -103,6 +104,7 @@ app.use("/api/impact-locations", impactLocationRoutes);
 app.use("/api/videos", videoRoutes);
 app.use(notFound);
 app.use(errorHandler);
+app.use("/api/search", searchRoutes);
 
 const PORT = process.env.PORT || 5000;
 

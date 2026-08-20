@@ -2,13 +2,13 @@ import jwt from "jsonwebtoken";
 import speakeasy from "speakeasy";
 import qrcode from "qrcode";
 import Admin from "../models/Admin.js";
+import { sendEmail } from "../config/mailer.js";
 
 function signToken(admin) {
   return jwt.sign({ id: admin._id, role: admin.role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",
   });
 }
-
 
 export async function createAdmin(req, res, next) {
   try {
@@ -26,12 +26,41 @@ export async function createAdmin(req, res, next) {
       passwordHash,
       role: role === "superadmin" ? "superadmin" : "admin",
     });
+    let emailSent = true;
+    try {
+      const loginUrl = `${(process.env.CLIENT_URL || "").split(",")[0].trim()}/admin/login`;
+
+      await sendEmail({
+        to: email,
+        subject: "Your Obinrin Empowerment Foundation admin account",
+        html: `
+          <p>Hi ${name},</p>
+          <p>An admin account has been created for you on the Obinrin Empowerment Foundation dashboard.</p>
+          <p>
+            <strong>Email:</strong> ${email}<br/>
+            <strong>Temporary password:</strong> ${password}
+          </p>
+          <p>
+            Log in here: <a href="${loginUrl}">${loginUrl}</a>
+          </p>
+          <p>
+            For security, please change your password after logging in
+            (Settings → Password), and consider enabling two-factor
+            authentication for extra protection on your account.
+          </p>
+        `,
+      });
+    } catch (emailErr) {
+      console.error("Failed to send new-admin email:", emailErr.message);
+      emailSent = false;
+    }
 
     res.status(201).json({
       id: admin._id,
       name: admin.name,
       email: admin.email,
       role: admin.role,
+      emailSent,
     });
   } catch (err) {
     next(err);
