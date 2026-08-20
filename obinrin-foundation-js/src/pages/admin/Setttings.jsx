@@ -111,21 +111,26 @@ export default function Settings() {
     setAdminModalOpen(true);
   }
 
-  async function handleCreateAdmin(e) {
-    e.preventDefault();
-    setAdminFormError("");
-    setCreatingAdmin(true);
-    try {
-      await api.post("/admin/auth/create", adminForm);
-      setAdminModalOpen(false);
-      setAdminForm(emptyAdminForm);
-      loadAdmins();
-    } catch (err) {
-      setAdminFormError(err.response?.data?.message || "Couldn't create admin.");
-    } finally {
-      setCreatingAdmin(false);
+ async function handleCreateAdmin(e) {
+  e.preventDefault();
+  setAdminFormError("");
+  setCreatingAdmin(true);
+  try {
+    const res = await api.post("/admin/auth/create", adminForm);
+    setAdminModalOpen(false);
+    setAdminForm(emptyAdminForm);
+    loadAdmins();
+    if (!res.data.emailSent) {
+      setAdminFormError(
+        "Admin created, but the notification email failed to send — share the password with them manually."
+      );
     }
+  } catch (err) {
+    setAdminFormError(err.response?.data?.message || "Couldn't create admin.");
+  } finally {
+    setCreatingAdmin(false);
   }
+}
 
   return (
     <div className="space-y-6 max-w-3xl">
