@@ -1,35 +1,39 @@
-import nodemailer from "nodemailer";
 
-const port = Number(process.env.SMTP_PORT) || 587;
-
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port,
-  secure: port === 465,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
-
-transporter.verify((err) => {
-  if (err) {
-    console.error("SMTP connection failed at startup:", err.message);
-  } else {
-    console.log("SMTP connection verified — ready to send email.");
-  }
-});
+const RESEND_API_URL = "https://api.resend.com/emails";
 
 export async function sendEmail({ to, subject, html }) {
-  const info = await transporter.sendMail({
-    from: process.env.EMAIL_FROM,
-    to,
-    subject,
-    html,
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not set — cannot send email.");
+  }
+  if (!process.env.EMAIL_FROM) {
+    throw new Error("EMAIL_FROM is not set — cannot send email.");
+  }
+
+  const response = await fetch(RESEND_API_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: process.env.EMAIL_FROM,
+      to,
+      subject,
+      html,
+    }),
   });
 
-  console.log(`Email sent: ${info.messageId} to ${to}`);
+  const data = await response.json();
 
-  return info;
+  if (!response.ok) {
+    // Resend's error responses include a helpful "message" field —
+    // surface it directly instead of a generic failure.
+    throw new Error(data.message || `Resend API error (${response.status})`);
+  }
+
+  console.log(`Email sent via Resend: ${data.id} to ${to}`);
+
+  return data;
 }
-export default transporter;
+
+export default { sendEmail };

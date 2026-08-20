@@ -1,4 +1,3 @@
-
 import Groq from "groq-sdk";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
@@ -12,7 +11,7 @@ export async function generateThankYouDraft({ donorName, amount, currency, chann
       : "Write 3-4 short paragraphs suitable for an email, with a greeting and sign-off.";
 
   const completion = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
+    model: "openai/gpt-oss-20b",
     messages: [
       {
         role: "user",
