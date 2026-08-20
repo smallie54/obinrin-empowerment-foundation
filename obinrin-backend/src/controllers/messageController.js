@@ -37,7 +37,7 @@ export async function sendThankYouMessage(req, res, next) {
     }
 
     try {
-      await sendEmail({ to: donorEmail, subject, text: body });
+      await sendEmail({ to: donorEmail, subject, html: body });
       const message = await Message.create({
         donorName,
         donorEmail,
