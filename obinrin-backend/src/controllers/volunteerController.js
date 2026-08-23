@@ -1,5 +1,6 @@
 import Volunteer from "../models/Volunteer.js";
 import Outreach from "../models/Outreach.js";
+import { createNotification } from "./notificationController.js";
 
 export async function listVolunteers(req, res, next) {
   try {
@@ -29,6 +30,11 @@ export async function createVolunteer(req, res, next) {
   try {
     const volunteer = await Volunteer.create(req.body);
     res.status(201).json(volunteer);
+    await createNotification({
+      message: `New volunteer application from ${volunteer.name}`,
+      type: "volunteer",
+      link: "/admin/volunteers",
+    });
   } catch (err) {
     next(err);
   }

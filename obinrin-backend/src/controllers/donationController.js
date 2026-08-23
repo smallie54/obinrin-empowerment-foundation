@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import axios from "axios";
 import crypto from "crypto";
 import Donation from "../models/Donation.js";
+import { createNotification } from "./notificationController.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -11,7 +12,7 @@ export async function createStripePaymentIntent(req, res, next) {
     const { amount, currency = "usd", donorEmail, donorName, dedicatedTo } = req.body;
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount, // smallest currency unit, e.g. cents
+      amount, 
       currency,
       receipt_email: donorEmail,
       metadata: { donorName: donorName || "", dedicatedTo: dedicatedTo || "" },
@@ -33,9 +34,6 @@ export async function createStripePaymentIntent(req, res, next) {
     next(err);
   }
 }
-
-// Stripe requires the raw request body for signature verification.
-// Mount this route with express.raw({ type: "application/json" }).
 export async function stripeWebhook(req, res) {
   const sig = req.headers["stripe-signature"];
   let event;
@@ -53,16 +51,25 @@ export async function stripeWebhook(req, res) {
   if (event.type === "payment_intent.succeeded" || event.type === "payment_intent.payment_failed") {
     const intent = event.data.object;
     const status = event.type === "payment_intent.succeeded" ? "successful" : "failed";
-    await Donation.findOneAndUpdate(
+    const donation = await Donation.findOneAndUpdate(
       { providerReference: intent.id },
-      { status }
+      { status },
+      { new: true }
     );
+
+    if (status === "successful" && donation) {
+      await createNotification({
+        message: `New donation of ${donation.currency} ${(donation.amount / 100).toLocaleString()} from ${donation.donorName || donation.donorEmail}`,
+        type: "donation",
+        link: "/admin/donations",
+      });
+    }
   }
 
   res.json({ received: true });
 }
 
-// ---------- Paystack ----------
+
 
 export async function initializePaystackTransaction(req, res, next) {
   try {
@@ -72,7 +79,7 @@ export async function initializePaystackTransaction(req, res, next) {
       "https://api.paystack.co/transaction/initialize",
       {
         email: donorEmail,
-        amount, // Paystack expects the smallest currency unit (e.g. kobo)
+        amount, 
         currency,
         metadata: { donorName: donorName || "", dedicatedTo: dedicatedTo || "" },
       },
@@ -102,9 +109,6 @@ export async function initializePaystackTransaction(req, res, next) {
   }
 }
 
-// Paystack signs webhook payloads with HMAC SHA512 of the raw body,
-// using your secret key. Mount this route with express.json() but verify
-// against the raw body captured by the json middleware's verify option.
 export async function paystackWebhook(req, res) {
   const hash = crypto
     .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY)
@@ -118,10 +122,19 @@ export async function paystackWebhook(req, res) {
   const event = req.body;
 
   if (event.event === "charge.success") {
-    await Donation.findOneAndUpdate(
+    const donation = await Donation.findOneAndUpdate(
       { providerReference: event.data.reference },
-      { status: "successful" }
+      { status: "successful" },
+      { new: true }
     );
+
+    if (donation) {
+      await createNotification({
+        message: `New donation of ${donation.currency} ${(donation.amount / 100).toLocaleString()} from ${donation.donorName || donation.donorEmail}`,
+        type: "donation",
+        link: "/admin/donations",
+      });
+    }
   } else if (event.event === "charge.failed") {
     await Donation.findOneAndUpdate(
       { providerReference: event.data.reference },
@@ -132,7 +145,6 @@ export async function paystackWebhook(req, res) {
   res.sendStatus(200);
 }
 
-// ---------- Admin ----------
 
 export async function listDonations(req, res, next) {
   try {
@@ -147,7 +159,6 @@ export async function listDonations(req, res, next) {
     next(err);
   }
 }
-// ---------- Admin: manual entry + flags ----------
 
 export async function createManualDonation(req, res, next) {
   try {
@@ -164,7 +175,7 @@ export async function createManualDonation(req, res, next) {
       donorEmail,
       provider,
       dedicatedTo,
-      status: "successful", // manual entries are logged after payment is already confirmed
+      status: "successful", 
     });
 
     res.status(201).json(donation);
@@ -188,7 +199,6 @@ export async function updateDonationFlags(req, res, next) {
   }
 }
 
-// ---------- Updated: donationAnalytics now includes activeDonors ----------
 
 export async function donationAnalytics(req, res, next) {
   try {

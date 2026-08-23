@@ -3,6 +3,7 @@ import Message from "../models/message.js";
 // import { generateThankYouDraft } from "../config/geminiService.js";
 import { generateThankYouDraft } from "../config/groqServices.js";
 import { sendEmail } from "../config/mailer.js";
+import { createNotification } from "./notificationController.js";
 
 export async function draftThankYouMessage(req, res, next) {
   try {
@@ -19,8 +20,6 @@ export async function sendThankYouMessage(req, res, next) {
     const { donorEmail, donorName, channel, subject, body } = req.body;
 
     if (channel === "sms") {
-      // No SMS provider wired up yet — log as pending rather than
-      // pretending it actually sent.
       const message = await Message.create({
         donorName,
         donorEmail,
@@ -37,7 +36,16 @@ export async function sendThankYouMessage(req, res, next) {
     }
 
     try {
-      await sendEmail({ to: donorEmail, subject, html: body });
+      try {
+        await sendEmail({ to: donorEmail, subject: subject || "Thank you for your gift", html: body });
+      } catch (emailErr) {
+        await createNotification({
+          message: `Failed to send thank-you message to ${donorEmail}`,
+          type: "message",
+          link: "/admin/messages",
+        });
+        throw emailErr;
+      }
       const message = await Message.create({
         donorName,
         donorEmail,
