@@ -19,7 +19,7 @@ const eventSchema = new mongoose.Schema(
       enum: ["upcoming", "past", "cancelled"],
       default: "upcoming",
     },
-
+    reminderSent: { type: Boolean, default: false },
     coverImage: {
       url: String,
       publicId: String,
