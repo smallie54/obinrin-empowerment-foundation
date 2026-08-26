@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "seed:admin": "node src/scripts/seedSuperAdmin.js"
+    "seed:admin": "node src/scripts/seedSuperAdmin.js",
+    "backfill:reminders": "node src/scripts/backfillReminderSent.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.115.0",
@@ -27,6 +28,7 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "multer-storage-cloudinary": "^2.2.1",
+    "node-cron": "^4.6.0",
     "nodemailer": "^9.0.3",
     "qrcode": "^1.5.4",
     "resend": "^6.18.1",
@@ -36,5 +38,8 @@
   "devDependencies": {
     "mongodb-memory-server": "^11.2.0",
     "nodemon": "^3.1.4"
+  },
+  "allowScripts": {
+    "node-cron@4.6.0": true
   }
 }

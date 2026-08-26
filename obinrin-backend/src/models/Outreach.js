@@ -10,6 +10,7 @@ const outreachSchema = new mongoose.Schema(
       enum: ["idea", "planning", "scheduled", "in-progress", "completed"],
       default: "idea",
     },
+    reminderSent: { type: Boolean, default: false },
     priority: {
       type: String,
       enum: ["low", "medium", "high"],

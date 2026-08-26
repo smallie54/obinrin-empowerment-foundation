@@ -32,6 +32,7 @@ import impactLocationRoutes from "./routes/impactLocationRoutes.js";
 import videoRoutes from "./routes/videoRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js"
+import internalRoutes from "./routes/internalRoutes.js";
 const app = express();
 
 app.use(helmet());
@@ -107,6 +108,7 @@ app.use(notFound);
 app.use(errorHandler);
 app.use("/api/search", searchRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/internal", internalRoutes);
 
 const PORT = process.env.PORT || 5000;
 
