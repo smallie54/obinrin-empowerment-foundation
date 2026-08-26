@@ -35,6 +35,7 @@ import notificationRoutes from "./routes/notificationRoutes.js"
 import internalRoutes from "./routes/internalRoutes.js";
 const app = express();
 
+app.use("/api/internal", internalRoutes);
 app.use(helmet());
 
 const allowedOrigins = (process.env.CLIENT_URL || "")
@@ -104,11 +105,10 @@ app.use("/api/stories", storiesRoutes);
 app.use("/api/programs", programRoutes);
 app.use("/api/impact-locations", impactLocationRoutes);
 app.use("/api/videos", videoRoutes);
-app.use(notFound);
-app.use(errorHandler);
 app.use("/api/search", searchRoutes);
 app.use("/api/notifications", notificationRoutes);
-app.use("/api/internal", internalRoutes);
+app.use(errorHandler);
+app.use(notFound);
 
 const PORT = process.env.PORT || 5000;
 
